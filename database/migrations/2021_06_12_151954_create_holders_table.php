@@ -27,7 +27,7 @@ class CreateHoldersTable extends Migration
             $table->id();
             $table->unsignedBigInteger('project_id');
             $table->string('key');
-            $table->float('value', 8, 2, true);
+            $table->float('value', 8, 2);
             $table->timestamps();
 
             $table->foreign('project_id')
