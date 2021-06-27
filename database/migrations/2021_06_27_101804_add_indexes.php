@@ -16,6 +16,10 @@ class AddIndexes extends Migration
         Schema::table('projects', function (Blueprint $table) {
             $table->index(['rating']);
         });
+
+        Schema::table('holders', function (Blueprint $table) {
+            $table->index(['project_id','date']);
+        });
     }
 
     /**
@@ -27,6 +31,10 @@ class AddIndexes extends Migration
     {
         Schema::table('projects', function (Blueprint $table) {
             $table->dropIndex(['rating']);
+        });
+
+        Schema::table('holders', function (Blueprint $table) {
+            $table->dropIndex(['date']);
         });
     }
 }
