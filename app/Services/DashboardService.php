@@ -90,8 +90,11 @@ class DashboardService
         $start = 0;
         $monthAgo = Carbon::now()->subMonth();
 
+        $date = $monthAgo->toDateString();
         while ($start <= 30) {
-            $category[] = $monthAgo->addDay()->toDateString();
+            $category[] = $date;
+            $date = $monthAgo->addDay()->toDateString();
+
             $start++;
         }
 
