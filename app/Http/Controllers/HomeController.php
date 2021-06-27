@@ -38,14 +38,26 @@ class HomeController extends Controller
         ]);
     }
 
-    public function getCountHoldersDashboard(): JsonResponse
+    public function getGrowthCountHoldersDashboard(): JsonResponse
     {
         return response()->json([
             'categories' => $this->dashboardService->getCategories(),
             'growth' => $this->dashboardService->getData('desc'),
-            'growthPercent' => $this->dashboardService->getDataForPercent('desc'),
+        ]);
+    }
+
+    public function getFallCountHoldersDashboard(): JsonResponse
+    {
+        return response()->json([
+            'categories' => $this->dashboardService->getCategories(),
             'fall' => $this->dashboardService->getData(),
         ]);
     }
 
+    public function getGrowthPercentCountHoldersDashboard(): JsonResponse
+    {
+        return response()->json([
+            'growthPercent' => $this->dashboardService->getDataForPercent('desc'),
+        ]);
+    }
 }

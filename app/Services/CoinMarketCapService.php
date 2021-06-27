@@ -11,7 +11,7 @@ use Illuminate\Support\Collection;
 
 class CoinMarketCapService
 {
-    const CRYPTOCURRENCY_URL = 'https://api.coinmarketcap.com/data-api/v3/cryptocurrency/listing?start=%s&limit=100&sortBy=market_cap&sortType=desc&convert=USD,BTC,ETH&cryptoType=tokens&tagType=all&audited=false&aux=ath,atl,high24h,low24h,num_market_pairs,cmc_rank,date_added,tags,platform,max_supply,circulating_supply,total_supply,volume_7d,volume_30d';
+    const CRYPTOCURRENCY_URL = 'https://api.coinmarketcap.com/data-api/v3/cryptocurrency/listing?start=%s&limit=1000&sortBy=market_cap&sortType=desc&convert=USD,BTC,ETH&cryptoType=tokens&tagType=all&audited=false&aux=ath,atl,high24h,low24h,num_market_pairs,cmc_rank,date_added,tags,platform,max_supply,circulating_supply,total_supply,volume_7d,volume_30d';
 
     const HOLDERS_URL = 'https://api.coinmarketcap.com/data-api/v3/cryptocurrency/detail/holders/count?id=%s&range=%s';
 
@@ -69,7 +69,7 @@ class CoinMarketCapService
 
                 echo PHP_EOL;
             }
-            $start += 100;
+            $start += 1000;
         } while (!empty($projectsCryptocurrencyList));
     }
 

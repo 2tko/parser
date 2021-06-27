@@ -45,10 +45,6 @@ export default {
                 title: {
                     text: 'ТОП 20 по РОСТУ холдеров в %'
                 },
-                /*xAxis: {
-                    alignTicks: false,
-                    categories: ['рост в %'],
-                },*/
                 plotOptions: {
                     series: {
                         borderWidth: 0,
@@ -75,20 +71,34 @@ export default {
         }
     },
     mounted() {
-        this.getDashboardsData();
+        this.getGrowthDashboardData();
+        this.getFallDashboardData();
+        this.getGrowthPercentDashboardData();
     },
     methods: {
-        getDashboardsData() {
+        getGrowthDashboardData() {
             this.loading = true;
-            axios.get('/count-holders-dashboard', {}).then(response => {
+            axios.get('/growth/count-holders-dashboard', {}).then(response => {
                 this.loading = false;
                 this.growth.series = response.data.growth;
-                this.growthPercent.series[0].data = response.data.growthPercent;
-                this.fall.series = response.data.fall;
                 this.growth.xAxis.categories = response.data.categories;
+            });
+        },
+        getFallDashboardData() {
+            this.loading = true;
+            axios.get('/fall/count-holders-dashboard', {}).then(response => {
+                this.loading = false;
+                this.fall.series = response.data.fall;
                 this.fall.xAxis.categories = response.data.categories;
             });
-        }
+        },
+        getGrowthPercentDashboardData() {
+            this.loading = true;
+            axios.get('/growth-percent/count-holders-dashboard', {}).then(response => {
+                this.loading = false;
+                this.growthPercent.series[0].data = response.data.growthPercent;
+            });
+        },
     }
 }
 </script>

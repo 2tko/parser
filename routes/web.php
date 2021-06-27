@@ -18,7 +18,9 @@ Route::get('/', function () {
 });
 
 Route::get('/projects', [App\Http\Controllers\HomeController::class, 'getProjects']);
-Route::get('/count-holders-dashboard', [App\Http\Controllers\HomeController::class, 'getCountHoldersDashboard']);
+Route::get('/growth/count-holders-dashboard', [App\Http\Controllers\HomeController::class, 'getGrowthCountHoldersDashboard']);
+Route::get('/fall/count-holders-dashboard', [App\Http\Controllers\HomeController::class, 'getFallCountHoldersDashboard']);
+Route::get('/growth-percent/count-holders-dashboard', [App\Http\Controllers\HomeController::class, 'getGrowthPercentCountHoldersDashboard']);
 
 Auth::routes();
 
