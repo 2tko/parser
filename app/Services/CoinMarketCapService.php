@@ -187,7 +187,8 @@ class CoinMarketCapService
     private function shouldUpdateHolderRecord(Carbon $date): bool
     {
         return $date->startOfDay()->equalTo(Carbon::now()->startOfDay())
-            || $date->startOfDay()->equalTo(Carbon::now()->subDay()->startOfDay());
+            || $date->startOfDay()->equalTo(Carbon::now()->subDay()->startOfDay())
+            || $date->startOfDay()->equalTo(Carbon::now()->subDays(2)->startOfDay());
     }
 
     private function createHolderRecord(Project $project, int $count, Carbon $date): void
