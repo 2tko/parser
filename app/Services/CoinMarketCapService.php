@@ -38,6 +38,8 @@ class CoinMarketCapService
             foreach ($projectsCryptocurrencyList as $projectCryptocurrency) {
                 echo 'Processing project ' . $projectCryptocurrency->name . PHP_EOL;
 
+                sleep(rand(13,20));
+
                 $holderData = $this->getHolders($projectCryptocurrency->id, $holdersRange);
                 if (empty($holderData)) {
                     continue;
