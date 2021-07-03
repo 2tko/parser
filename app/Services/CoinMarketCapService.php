@@ -191,10 +191,6 @@ class CoinMarketCapService
             || $date->startOfDay()->equalTo(Carbon::now()->subDays(2)->startOfDay())
             || $date->startOfDay()->equalTo(Carbon::now()->subDays(3)->startOfDay())
             || $date->startOfDay()->equalTo(Carbon::now()->subDays(4)->startOfDay())
-            || $date->startOfDay()->equalTo(Carbon::now()->subDays(5)->startOfDay())
-            || $date->startOfDay()->equalTo(Carbon::now()->subDays(6)->startOfDay())
-            || $date->startOfDay()->equalTo(Carbon::now()->subDays(7)->startOfDay())
-            || $date->startOfDay()->equalTo(Carbon::now()->subDays(8)->startOfDay());
     }
 
     private function createHolderRecord(Project $project, int $count, Carbon $date): void
