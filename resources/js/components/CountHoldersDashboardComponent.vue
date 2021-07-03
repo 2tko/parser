@@ -80,7 +80,11 @@ export default {
     methods: {
         getGrowthDashboardData() {
             this.loadingGrowth = true;
-            axios.get('/growth/count-holders-dashboard', {}).then(response => {
+            axios.get('/growth/count-holders-dashboard', {
+                params: {
+                    page: this.page
+                }
+            }).then(response => {
                 this.loadingGrowth = false;
                 this.growth.series = response.data.growth;
                 this.growth.xAxis.categories = response.data.categories;
@@ -88,7 +92,11 @@ export default {
         },
         getFallDashboardData() {
             this.loadingFall = true;
-            axios.get('/fall/count-holders-dashboard', {}).then(response => {
+            axios.get('/fall/count-holders-dashboard', {
+                params: {
+                    page: this.page
+                }
+            }).then(response => {
                 this.loadingFall = false;
                 this.fall.series = response.data.fall;
                 this.fall.xAxis.categories = response.data.categories;
@@ -96,7 +104,11 @@ export default {
         },
         getGrowthPercentDashboardData() {
             this.loadingGrowthPercent = true;
-            axios.get('/growth-percent/count-holders-dashboard', {}).then(response => {
+            axios.get('/growth-percent/count-holders-dashboard', {
+                params: {
+                    page: this.page
+                }
+            }).then(response => {
                 this.loadingGrowthPercent = false;
                 this.growthPercent.series[0].data = response.data.growthPercent;
             });

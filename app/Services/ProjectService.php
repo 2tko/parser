@@ -8,7 +8,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class ProjectService
 {
-    const PER_PAGE_FOR_TABLE = 40;
+    const PER_PAGE_FOR_TABLE = 20;
 
     public function getTableStatistic(?string $name): LengthAwarePaginator
     {

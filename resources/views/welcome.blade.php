@@ -22,7 +22,6 @@
     </head>
     <body class="antialiased">
         <div id="app">
-            <count-holders-dashboard></count-holders-dashboard>
             <table-statistic></table-statistic>
         </div>
     </body>

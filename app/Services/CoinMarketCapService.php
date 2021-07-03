@@ -38,7 +38,7 @@ class CoinMarketCapService
             foreach ($projectsCryptocurrencyList as $projectCryptocurrency) {
                 echo 'Processing project ' . $projectCryptocurrency->name . PHP_EOL;
 
-                sleep(rand(10,13));
+              //  sleep(rand(10,13));
 
                 $holderData = $this->getHolders($projectCryptocurrency->id, $holdersRange);
                 if (empty($holderData)) {
@@ -188,7 +188,13 @@ class CoinMarketCapService
     {
         return $date->startOfDay()->equalTo(Carbon::now()->startOfDay())
             || $date->startOfDay()->equalTo(Carbon::now()->subDay()->startOfDay())
-            || $date->startOfDay()->equalTo(Carbon::now()->subDays(2)->startOfDay());
+            || $date->startOfDay()->equalTo(Carbon::now()->subDays(2)->startOfDay())
+            || $date->startOfDay()->equalTo(Carbon::now()->subDays(3)->startOfDay())
+            || $date->startOfDay()->equalTo(Carbon::now()->subDays(4)->startOfDay())
+            || $date->startOfDay()->equalTo(Carbon::now()->subDays(5)->startOfDay())
+            || $date->startOfDay()->equalTo(Carbon::now()->subDays(6)->startOfDay())
+            || $date->startOfDay()->equalTo(Carbon::now()->subDays(7)->startOfDay())
+            || $date->startOfDay()->equalTo(Carbon::now()->subDays(8)->startOfDay());
     }
 
     private function createHolderRecord(Project $project, int $count, Carbon $date): void

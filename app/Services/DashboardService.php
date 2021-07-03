@@ -10,17 +10,20 @@ use Carbon\Carbon;
 class DashboardService
 {
     const LIMIT = 20;
+    const COUNT_DAYS = 29;
 
-    public function getData(string $orderType = 'asc'): array
+    public function getData(int $page = 1, string $orderType = 'asc'): array
     {
-        $between = [1, 20];
+        $between = $this->getBetween($page);
         if ($orderType == 'asc') {
             $maxRating = Project::max('rating');
             $between = [$maxRating - 20, $maxRating];
         }
+
         $projects = Project::query()
             ->from('projects as p')
             ->addSelect('p.id')
+            ->addSelect('p.rating')
             ->addSelect('p.name')
             ->addSelect('h.count')
             ->addSelect('h.date')
@@ -35,11 +38,12 @@ class DashboardService
         $i = 0;
         foreach ($projects as $key => $projectData) {
             $data[$i]['name'] = $key;
+            $data[$i]['legendIndex'] = $projectData[0]->rating;
 
             $monthAgo = Carbon::now()->subMonth();
             $date = $monthAgo->toDateString();
             $start = 0;
-            while ($start <= 30) {
+            while ($start <= self::COUNT_DAYS) {
                 $count = 0;
                 $dataForDate = $projectData->where('date', $monthAgo->toDateString())->first();
                 if ($dataForDate) {
@@ -58,7 +62,7 @@ class DashboardService
         return $data;
     }
 
-    public function getDataForPercent(string $orderType = 'asc'): array
+    public function getDataForPercent(int $page = 1, string $orderType = 'asc'): array
     {
         $projects = Project::query()
             ->from('projects as p')
@@ -69,7 +73,7 @@ class DashboardService
                 $join->on('pg.project_id', '=', 'p.id')
                     ->where('pg.key', '=', ProjectGrowth::TWO_WEEKS);
             })
-            ->whereBetween('p.rating', [1, 20])
+            ->whereBetween('p.rating', $this->getBetween($page))
             ->get();
 
         $data = [];
@@ -91,7 +95,7 @@ class DashboardService
         $monthAgo = Carbon::now()->subMonth();
 
         $date = $monthAgo->toDateString();
-        while ($start <= 30) {
+        while ($start <= self::COUNT_DAYS) {
             $category[] = $date;
             $date = $monthAgo->addDay()->toDateString();
 
@@ -99,5 +103,16 @@ class DashboardService
         }
 
         return $category;
+    }
+
+    private function getBetween(int $page = 1): array
+    {
+        $between = [1, self::LIMIT];
+        if ($page > 1) {
+            $page = self::LIMIT * $page;
+            $between = [($page - self::LIMIT + 1), $page];
+        }
+
+        return $between;
     }
 }

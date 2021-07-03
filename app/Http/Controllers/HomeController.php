@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Services\DashboardService;
 use App\Services\ProjectService;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -38,15 +37,15 @@ class HomeController extends Controller
         ]);
     }
 
-    public function getGrowthCountHoldersDashboard(): JsonResponse
+    public function getGrowthCountHoldersDashboard(Request $request): JsonResponse
     {
         return response()->json([
             'categories' => $this->dashboardService->getCategories(),
-            'growth' => $this->dashboardService->getData('desc'),
+            'growth' => $this->dashboardService->getData($request->get('page'), 'desc'),
         ]);
     }
 
-    public function getFallCountHoldersDashboard(): JsonResponse
+    public function getFallCountHoldersDashboard(Request $request): JsonResponse
     {
         return response()->json([
             'categories' => $this->dashboardService->getCategories(),
@@ -54,10 +53,10 @@ class HomeController extends Controller
         ]);
     }
 
-    public function getGrowthPercentCountHoldersDashboard(): JsonResponse
+    public function getGrowthPercentCountHoldersDashboard(Request $request): JsonResponse
     {
         return response()->json([
-            'growthPercent' => $this->dashboardService->getDataForPercent('desc'),
+            'growthPercent' => $this->dashboardService->getDataForPercent($request->get('page'), 'desc'),
         ]);
     }
 }

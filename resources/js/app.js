@@ -32,7 +32,6 @@ stockInit(Highchart);
 Vue.use(HighchartsVue);
 
 Vue.component('table-statistic', require('./components/TableStatisticComponent.vue').default);
-Vue.component('count-holders-dashboard', require('./components/CountHoldersDashboardComponent.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
