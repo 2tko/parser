@@ -45,6 +45,14 @@ class HomeController extends Controller
         ]);
     }
 
+    public function getGrowthCompareCountHoldersDashboard(Request $request): JsonResponse
+    {
+        return response()->json([
+            'categories' => $this->dashboardService->getCategories(),
+            'growth' => $this->dashboardService->compare($request->get('projectIds')),
+        ]);
+    }
+
     public function getFallCountHoldersDashboard(Request $request): JsonResponse
     {
         return response()->json([

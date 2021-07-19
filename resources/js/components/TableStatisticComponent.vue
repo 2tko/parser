@@ -1,24 +1,17 @@
 <template>
     <div>
         <div class="container" style="padding: 100px;">
-            <highcharts v-loading="loadingFall" :options="fall"></highcharts>
-            <highcharts v-loading="loadingGrowth" :options="growth"></highcharts>
-            <el-pagination
-                background
-                layout="prev, pager, next"
-                :total="totalPage"
-                :page-size="pageSize"
-                :current-page.sync="page"
-                @current-change="handlePaginate">
-            </el-pagination>
             <highcharts v-loading="loadingGrowthPercent" :options="growthPercent"></highcharts>
         </div>
+
+        <highcharts v-if="loadingGrowthCompare || growthCompare.series.length > 0" v-loading="loadingGrowthCompare" :options="growthCompare"></highcharts>
 
         <div class="container" style="padding: 0px 100px 100px 100px;">
             <el-row style="margin-bottom: 10px;">
                 <el-input placeholder="Name" v-model="filterName" style="width: 10%;"></el-input>
-                <el-button type="primary" v-on:click="filteringProject">Filter</el-button>
-                <el-button v-on:click="resetFilter">Reset</el-button>
+                <el-button type="primary" v-on:click="filteringProject">Найти</el-button>
+                <el-button :disabled="projectIds.length === 0" type="success" v-on:click="compareData">Сравнить</el-button>
+                <el-button v-on:click="resetFilter">Сбросить</el-button>
             </el-row>
 
             <el-pagination
@@ -31,10 +24,16 @@
             </el-pagination>
 
             <el-table
+                @selection-change="handleSelectionChange"
                 v-loading="loading"
                 :data="tableData"
                 border
                 style="width: 100%">
+                <el-table-column
+                    type="selection"
+                    width="55">
+                </el-table-column>
+
                 <el-table-column
                     prop="rating"
                     width="80"
@@ -99,6 +98,9 @@
                 :current-page.sync="page"
                 @current-change="handlePaginate">
             </el-pagination>
+
+            <highcharts v-loading="loadingGrowth" :options="growth"></highcharts>
+            <highcharts v-loading="loadingFall" :options="fall"></highcharts>
         </div>
     </div>
 </template>
@@ -116,11 +118,25 @@
                 totalPage: 0,
                 pageSize: 0,
                 loadingGrowth: false,
+                loadingGrowthCompare: false,
                 loadingFall: false,
                 loadingGrowthPercent: false,
+                projectIds: [],
                 growth : {
                     title: {
                         text: 'TOП 20 по РОСТУ холдеров в абсолютном значении'
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    xAxis: {
+                        categories: [],
+                    },
+                    series: []
+                },
+                growthCompare : {
+                    title: {
+                        text: 'Сравнение по РОСТУ холдеров в абсолютном значении'
                     },
                     credits: {
                         enabled: false
@@ -191,6 +207,7 @@
             },
             resetFilter() {
                 this.filterName = '';
+                this.growthCompare.series = [];
                 this.getProjects();
             },
             getProjects() {
@@ -248,6 +265,30 @@
                     this.growthPercent.series[0].data = response.data.growthPercent;
                 });
             },
+            compareData () {
+                if (this.projectIds.length === 0) {
+                    return;
+                }
+
+                this.loadingGrowthCompare = true;
+                axios.get('/growth/count-holders-dashboard/compare', {
+                    params: {
+                        projectIds: this.projectIds
+                    }
+                }).then(response => {
+                    this.loadingGrowthCompare = false;
+                    this.growthCompare.series = response.data.growth;
+                    this.growthCompare.xAxis.categories = response.data.categories;
+                });
+            },
+            handleSelectionChange(selectedData) {
+                this.projectIds = [];
+                if (selectedData.length > 0) {
+                    selectedData.forEach((element) => {
+                        this.projectIds.push(element.id);
+                    });
+                }
+            }
         }
     }
 </script>

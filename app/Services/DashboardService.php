@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
-use App\Models\Holder;
 use App\Models\Project;
 use App\Models\ProjectGrowth;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class DashboardService
 {
@@ -34,32 +34,26 @@ class DashboardService
             ->get()
             ->groupBy('name');
 
-        $data = [];
-        $i = 0;
-        foreach ($projects as $key => $projectData) {
-            $data[$i]['name'] = $key;
-            $data[$i]['legendIndex'] = $projectData[0]->rating;
+        return $this->makeDataForCountType($projects);
+    }
 
-            $monthAgo = Carbon::now()->subMonth();
-            $date = $monthAgo->toDateString();
-            $start = 0;
-            while ($start <= self::COUNT_DAYS) {
-                $count = 0;
-                $dataForDate = $projectData->where('date', $monthAgo->toDateString())->first();
-                if ($dataForDate) {
-                    $count = $dataForDate->count;
-                }
+    public function compare(array $projectIds): array
+    {
+        $projects = Project::query()
+            ->from('projects as p')
+            ->addSelect('p.id')
+            ->addSelect('p.rating')
+            ->addSelect('p.name')
+            ->addSelect('h.count')
+            ->addSelect('h.date')
+            ->join('holders as h', 'h.project_id', '=', 'p.id')
+            ->whereIn('p.id', $projectIds)
+            ->where('h.date', '>=', Carbon::now()->subMonth()->toDateString())
+            ->orderBy('h.date')
+            ->get()
+            ->groupBy('name');
 
-                $data[$i]['data'][] = [$date, $count];
-                $start++;
-                $date = $monthAgo->addDay()->toDateString();
-
-            }
-
-            $i++;
-        }
-
-        return $data;
+        return $this->makeDataForCountType($projects);
     }
 
     public function getDataForPercent(int $page = 1, string $orderType = 'asc'): array
@@ -114,5 +108,35 @@ class DashboardService
         }
 
         return $between;
+    }
+
+    private function makeDataForCountType(Collection $projects): array
+    {
+        $data = [];
+        $i = 0;
+        foreach ($projects as $key => $projectData) {
+            $data[$i]['name'] = $key;
+            $data[$i]['legendIndex'] = $projectData[0]->rating;
+
+            $monthAgo = Carbon::now()->subMonth();
+            $date = $monthAgo->toDateString();
+            $start = 0;
+            while ($start <= self::COUNT_DAYS) {
+                $count = 0;
+                $dataForDate = $projectData->where('date', $monthAgo->toDateString())->first();
+                if ($dataForDate) {
+                    $count = $dataForDate->count;
+                }
+
+                $data[$i]['data'][] = [$date, $count];
+                $start++;
+                $date = $monthAgo->addDay()->toDateString();
+
+            }
+
+            $i++;
+        }
+
+        return $data;
     }
 }
