@@ -2,16 +2,16 @@
     <div>
         <div class="container" style="padding: 100px;">
             <highcharts v-loading="loadingGrowthPercent" :options="growthPercent"></highcharts>
+            <highcharts v-loading="loadingFall" :options="fall"></highcharts>
         </div>
 
         <highcharts v-if="loadingGrowthCompare || growthCompare.series.length > 0" v-loading="loadingGrowthCompare" :options="growthCompare"></highcharts>
 
         <div class="container" style="padding: 0px 100px 100px 100px;">
             <el-row style="margin-bottom: 10px;">
-                <el-input placeholder="Name" v-model="filterName" style="width: 10%;"></el-input>
-                <el-button type="primary" v-on:click="filteringProject">Найти</el-button>
+                <el-input placeholder="Name" @input="filteringProject" v-model="filterName" style="width: 10%;"></el-input>
                 <el-button :disabled="projectIds.length === 0" type="success" v-on:click="compareData">Сравнить</el-button>
-                <el-button v-on:click="resetFilter">Сбросить</el-button>
+                <el-button v-on:click="resetCompare">Сбросить Сравнение</el-button>
             </el-row>
 
             <el-pagination
@@ -24,6 +24,8 @@
             </el-pagination>
 
             <el-table
+                ref="multipleTable"
+                @select="handleSelect"
                 @selection-change="handleSelectionChange"
                 v-loading="loading"
                 :data="tableData"
@@ -57,7 +59,7 @@
                 <el-table-column
                     align="center"
                     prop="total_count"
-                    label="Общее число холдеров (данные за предыдущие сутки)">
+                    label="Общее число холдеров">
                 </el-table-column>
                 <el-table-column
                     align="center"
@@ -100,7 +102,6 @@
             </el-pagination>
 
             <highcharts v-loading="loadingGrowth" :options="growth"></highcharts>
-            <highcharts v-loading="loadingFall" :options="fall"></highcharts>
         </div>
     </div>
 </template>
@@ -124,7 +125,7 @@
                 projectIds: [],
                 growth : {
                     title: {
-                        text: 'TOП 20 по РОСТУ холдеров в абсолютном значении'
+                        text: 'Прирост холдеров в абосолютном (лист № 1)'
                     },
                     credits: {
                         enabled: false
@@ -148,7 +149,7 @@
                 },
                 fall : {
                     title: {
-                        text: 'TOП 20 по ОТТОКУ холдеров в абсолютном значении'
+                        text: 'ТОП 20 по оттоку в абсолют'
                     },
                     credits: {
                         enabled: false
@@ -163,7 +164,7 @@
                         type: 'column'
                     },
                     title: {
-                        text: 'ТОП 20 по РОСТУ холдеров в %'
+                        text: 'ТОП 20 по росту в %'
                     },
                     plotOptions: {
                         series: {
@@ -198,17 +199,13 @@
         },
         methods: {
             filteringProject() {
-                if (this.filterName === '') {
-                    return;
-                }
-
                 this.page = 1;
                 this.getProjects();
             },
-            resetFilter() {
-                this.filterName = '';
+            resetCompare() {
                 this.growthCompare.series = [];
-                this.getProjects();
+                this.projectIds = [];
+                this.$refs.multipleTable.clearSelection();
             },
             getProjects() {
                 this.loading = true;
@@ -222,12 +219,12 @@
                     this.totalPage = response.data.projects.total;
                     this.pageSize = response.data.projects.per_page;
                     this.loading = false;
+                    this.checkedSelected();
                 });
             },
             handlePaginate(page) {
                 this.page = page;
                 this.getProjects();
-                this.getGrowthPercentDashboardData();
                 this.getGrowthDashboardData();
             },
             getGrowthDashboardData() {
@@ -239,6 +236,7 @@
                 }).then(response => {
                     this.loadingGrowth = false;
                     this.growth.series = response.data.growth;
+                    this.growth.title.text = 'Прирост холдеров в абосолютном (лист № ' + this.page + ')';
                     this.growth.xAxis.categories = response.data.categories;
                 });
             },
@@ -267,6 +265,7 @@
             },
             compareData () {
                 if (this.projectIds.length === 0) {
+                    this.resetCompare();
                     return;
                 }
 
@@ -282,13 +281,28 @@
                 });
             },
             handleSelectionChange(selectedData) {
-                this.projectIds = [];
                 if (selectedData.length > 0) {
                     selectedData.forEach((element) => {
-                        this.projectIds.push(element.id);
+                        if (! this.projectIds.includes(element.id)) {
+                            this.projectIds.push(element.id);
+                        }
                     });
                 }
-            }
+            },
+            handleSelect(selection, row) {
+                if (this.projectIds.indexOf(row.id) >= 0) {
+                    this.projectIds.splice(this.projectIds.indexOf(row.id), 1);
+                }
+            },
+            checkedSelected() {
+                this.tableData.forEach(row => {
+                    this.$nextTick(function () {
+                        if (this.projectIds.indexOf(row.id) >= 0) {
+                            this.$refs.multipleTable.toggleRowSelection(row, true);
+                        }
+                    })
+                })
+            },
         }
     }
 </script>
