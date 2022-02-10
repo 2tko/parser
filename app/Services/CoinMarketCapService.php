@@ -150,6 +150,10 @@ class CoinMarketCapService
         $response = $this->client->get($this->getHoldersUrl($id, $holdersRange));
         $holderData = json_decode($response->getBody()->getContents());
 
+        if (empty($holderData->data->points)) {
+            return [];
+        }
+
         return (array) $holderData->data->points ?? [];
     }
 
