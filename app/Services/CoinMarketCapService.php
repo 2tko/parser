@@ -38,7 +38,7 @@ class CoinMarketCapService
             foreach ($projectsCryptocurrencyList as $projectCryptocurrency) {
                 echo 'Processing project ' . $projectCryptocurrency->name . PHP_EOL;
 
-                sleep(rand(5, 7));
+                sleep(rand(2, 5));
 
                 $holderData = $this->getHolders($projectCryptocurrency->id, $holdersRange);
                 if (empty($holderData)) {
@@ -147,8 +147,17 @@ class CoinMarketCapService
 
     public function getHolders(int $id, string $holdersRange): array
     {
-        $response = $this->client->get($this->getHoldersUrl($id, $holdersRange));
-        $holderData = json_decode($response->getBody()->getContents());
+        try {
+            $response = $this->client->get($this->getHoldersUrl($id, $holdersRange));
+            $holderData = json_decode($response->getBody()->getContents());
+        } catch (\Exception $e) {
+            try {
+                sleep(rand(2, 5));
+                $holderData = json_decode($response->getBody()->getContents());
+            } catch (\Exception $e) {
+                return [];
+            }
+        }
 
         if (empty($holderData->data->points)) {
             return [];
