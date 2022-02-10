@@ -91,7 +91,10 @@ class CoinMarketCapService
 
                 foreach ($data as $item) {
                     if (!empty($item['holder'])) {
-                        $value = round((($holdersYesterday->count - $item['holder']->count) / $holdersYesterday->count) * 100, 2);
+                        $value = 0;
+                        if ($holdersYesterday->count > 0) {
+                            $value = round((($holdersYesterday->count - $item['holder']->count) / $holdersYesterday->count) * 100, 2);
+                        }
                         $projectGrowth = ProjectGrowth::where('project_id', $project->id)
                             ->where('key', $item['key'])
                             ->first();
